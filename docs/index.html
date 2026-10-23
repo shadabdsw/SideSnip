@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SideSnip</title>
+<meta name="description" content="A free browser extension that keeps the text you type again and again, and files like your resume, in a small glass panel at the side of your browser. Click to copy, or put it straight into the form.">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icon48.png" sizes="48x48">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4z" fill="currentColor"/></symbol>
+  <symbol id="i-clip-plus" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14h6M12 11v6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M10.73 5.08A10.74 10.74 0 0 1 21.94 11.65a1 1 0 0 1 0 .7 10.75 10.75 0 0 1-1.44 2.49"/><path d="M14.08 14.16a3 3 0 0 1-4.24-4.24"/><path d="M17.48 17.5a10.75 10.75 0 0 1-15.42-5.15 1 1 0 0 1 0-.7 10.75 10.75 0 0 1 4.45-5.14"/><path d="m2 2 20 20"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+  <symbol id="i-click" viewBox="0 0 24 24"><path d="M14 4.1 12 6M5.1 8l-2.9-.8M6 12l-1.9 2M7.2 2.2 8 5.1"/><path d="M9.04 9.69a.5.5 0 0 1 .65-.65l11 4.5a.5.5 0 0 1-.07.95l-4.35 1.04a1 1 0 0 0-.74.74l-1.04 4.35a.5.5 0 0 1-.95.07z"/></symbol>
+  <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+</svg>
+
+<main>
+  <section class="intro wrap narrow">
+    <div class="brand-row">
+      <img src="assets/icon128.png" alt="" width="64" height="64">
+      <h1>SideSnip</h1>
+    </div>
+    <p class="lead">A small glass panel at the side of your browser that keeps the text you type again and again, and files like your resume, one click away: copy it, type it into the field you’re on, or attach it to any form.</p>
+    <div class="actions">
+      <a class="btn primary" data-link="releases"><svg><use href="#i-download"/></svg><span>Download</span></a>
+      <a class="btn" data-link="github"><svg><use href="#i-github"/></svg><span>GitHub</span></a>
+    </div>
+    <!-- Update with every release, together with manifest.json "version". -->
+    <p class="also"><span class="release">Version 1.0.0 · 24 October 2026</span><span class="sep"> · </span>Also for <a data-link="edge">Edge</a> · <a data-link="opera">Opera</a> · <a data-link="firefox">Firefox</a><span class="free">Free, no account, and nothing leaves your computer.</span></p>
+    <details class="howto">
+      <summary>Installing the download in Chrome or Brave</summary>
+      <p>Unzip it to a folder you’ll keep, open <code>chrome://extensions</code>, turn on <strong>Developer mode</strong>, then click <strong>Load unpacked</strong> and choose the folder.</p>
+    </details>
+  </section>
+
+  <section class="shots wrap" aria-label="SideSnip in use">
+    <figure>
+      <div class="demo scene-mail" aria-hidden="true">
+        <div class="demo-panel">
+          <div class="dp-head">
+            <div class="dp-brand"><svg><use href="#i-logo"/></svg>SideSnip <small>5</small></div>
+            <div class="dp-icons"><svg><use href="#i-plus"/></svg><svg><use href="#i-clip-plus"/></svg><svg><use href="#i-eye-off"/></svg><svg><use href="#i-sliders"/></svg><svg class="flip"><use href="#i-chevron"/></svg></div>
+          </div>
+          <div class="dp-search"><svg><use href="#i-search"/></svg>Search all groups</div>
+          <div class="dp-chips"><span>All</span><span>General</span><span class="on">Work</span></div>
+          <div class="dp-list">
+            <div class="dp-row hover"><div><b>Book a call</b><em><i>Work ·</i> Here’s my calendar to pick a time: cal.com/jane/30min</em></div></div>
+            <div class="dp-row"><div><b>Thanks for reaching out</b><em><i>Work ·</i> Thanks for getting in touch! I’ll get back to you…</em></div></div>
+            <div class="dp-row"><div><b>Weekly update</b><em><i>Work ·</i> This week: shipped… Next week: …</em></div></div>
+            <div class="dp-row"><span class="dp-thumb"><svg><use href="#i-file"/></svg></span><div><b>Price list 2026</b><em><i>Work ·</i> PDF · 380 KB</em></div></div>
+            <div class="dp-row"><div><b>Signature</b><em><i>Work ·</i> Best regards, Jane Doe · Product Manager</em></div></div>
+          </div>
+        </div>
+        <div class="demo-mail">
+          <div class="mail-bar">New message</div>
+          <div class="mail-line"><span>To</span>john.doe@example.com</div>
+          <div class="mail-line"><span>Subject</span>Re: Project timeline</div>
+          <div class="mail-body">
+            <p>Hi John,</p>
+            <p>Thanks for the update, happy to talk it through.</p>
+            <p class="ins">Here’s my calendar to pick a time: cal.com/jane/30min<i></i></p>
+          </div>
+          <div class="mail-send">Send</div>
+        </div>
+        <div class="dp-toast">Inserted “Book a call”</div>
+      </div>
+      <figcaption>Replying to emails</figcaption>
+    </figure>
+
+    <figure>
+      <div class="demo scene-job" aria-hidden="true">
+        <div class="demo-form">
+          <b>Job application</b>
+          <label>Full name</label><div class="field">Jane Doe</div>
+          <label>LinkedIn profile</label><div class="field focus">https://www.linkedin.com/in/jane-doe</div>
+          <label>Why do you want this role?</label><div class="field tall"></div>
+          <label>Resume/CV</label><div class="field">resume.pdf</div>
+        </div>
+        <div class="demo-panel">
+          <div class="dp-head">
+            <div class="dp-brand"><svg><use href="#i-logo"/></svg>SideSnip <small>6</small></div>
+            <div class="dp-icons"><svg><use href="#i-plus"/></svg><svg><use href="#i-clip-plus"/></svg><svg><use href="#i-eye-off"/></svg><svg><use href="#i-sliders"/></svg><svg><use href="#i-chevron"/></svg></div>
+          </div>
+          <div class="dp-search"><svg><use href="#i-search"/></svg>Search all groups</div>
+          <div class="dp-chips"><span class="on">All</span><span>General</span><span>Work</span><span>Job Applications</span></div>
+          <div class="dp-list">
+            <div class="dp-row hover"><div><b>LinkedIn URL</b><em><i>Job Applications ·</i> https://www.linkedin.com/in/jane-doe</em></div></div>
+            <div class="dp-row"><div><b>Notice period</b><em><i>Job Applications ·</i> I can start with a 30-day notice period.</em></div></div>
+            <div class="dp-row"><div><b>Why this role</b><em><i>Job Applications ·</i> I’ve spent five years building…</em></div></div>
+            <div class="dp-row"><span class="dp-thumb"><svg><use href="#i-file"/></svg></span><div><b>Resume 2026</b><em><i>Job Applications ·</i> PDF · 214 KB</em></div></div>
+          </div>
+        </div>
+        <div class="dp-toast">Copied “LinkedIn URL”</div>
+      </div>
+      <figcaption>Filling in job applications</figcaption>
+    </figure>
+  </section>
+
+  <section class="features wrap" aria-labelledby="features-title">
+    <h2 id="features-title">What it does</h2>
+    <ul>
+      <li><span class="f-icon"><svg><use href="#i-click"/></svg></span><p><b>One click -</b> Click a snippet to copy it, or press ↵ to type it straight into the field you’re on.</p></li>
+      <li><span class="f-icon"><svg><use href="#i-clip-plus"/></svg></span><p><b>Save what you copied -</b> Turn the text you just copied into a snippet by giving it a title.</p></li>
+      <li><span class="f-icon"><svg><use href="#i-paperclip"/></svg></span><p><b>Files too -</b> Keep your resume or images and attach them to any upload field.</p></li>
+      <li><span class="f-icon"><svg><use href="#i-folder"/></svg></span><p><b>Groups -</b> Sort snippets into groups like Work and General, and search across all of them.</p></li>
+      <li><span class="f-icon"><svg><use href="#i-layout"/></svg></span><p><b>Your layout -</b> Float it on either side or dock it to a corner, in light or dark.</p></li>
+      <li><span class="f-icon"><svg><use href="#i-shield"/></svg></span><p><b>Private -</b> No account and no tracking; it only appears on sites you turn it on for.</p></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="credits">
+    <span>Made with <span class="heart" role="img" aria-label="love">♥</span> by <a data-link="author">shadabdsw</a> © 2026</span>
+  </div>
+  <nav><a href="privacy.html">Privacy</a><a data-link="issues">Report a problem</a></nav>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>

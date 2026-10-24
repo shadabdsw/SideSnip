@@ -273,6 +273,9 @@
   let formApi = null; // the open add/edit form, so clipboard text can be dropped into it
   let attaching = null; // { id, targets } while choosing an upload field for a file snippet
   let dragId = null; // snippet being dragged
+  let dragGroup = null; // group being reordered in settings
+  let selecting = null; // Set of picked snippet ids while choosing several to delete
+  let lastPicked = null; // anchor for Shift+click range picks
   let moving = false; // panel being dragged
   let pageDark = false;
   const fileCache = new Map(); // id -> Promise<File|null>
@@ -292,6 +295,17 @@
   const fileKind = (f) => ((f.name.includes('.') ? f.name.split('.').pop() : (f.type || '').split('/').pop()) || 'file').toUpperCase().slice(0, 5);
   const fileMeta = (f) => ({ name: f.name, type: f.type, size: f.size });
   const baseName = (name) => name.replace(/\.[^.]+$/, '') || name;
+  // A text snippet that is just one web address (https://… or www.…) gets an Open button.
+  const linkOf = (it) => {
+    if (isFile(it)) return null;
+    const s = (it.content || '').trim();
+    if (!s || /\s/.test(s) || !/^(https?:\/\/|www\.)/i.test(s)) return null;
+    try {
+      return new URL(/^www\./i.test(s) ? `https://${s}` : s);
+    } catch {
+      return null;
+    }
+  };
   // Only keep known fields (older versions stored `hidden` / `glass`).
   const sanitizeUI = (v) => {
     v = v || {};
@@ -370,6 +384,9 @@
       ['path', { d: 'M9 18c-4.51 2-5-2-7-2' }],
     ],
     up: [['path', { d: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' }], ['path', { d: 'm17 8-5-5-5 5M12 3v12' }]],
+    external: [['path', { d: 'M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6' }]],
+    listChecks: [['path', { d: 'm3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8' }]],
+    check: [['path', { d: 'M20 6 9 17l-5-5' }]],
     grip: [5, 12, 19].flatMap((y) => [
       ['circle', { cx: 9, cy: y, r: 1.6, fill: 'currentColor', stroke: 'none' }],
       ['circle', { cx: 15, cy: y, r: 1.6, fill: 'currentColor', stroke: 'none' }],
@@ -471,9 +488,16 @@
     }
   });
   const search = h('label', { class: 'search' }, icon('search'), searchInput);
+  const selectBtn = h(
+    'button',
+    { class: 'ic', title: 'Select several snippets to delete', 'aria-label': 'Select snippets', onclick: () => setSelecting(!selecting) },
+    icon('listChecks')
+  );
+  const searchBar = h('div', { class: 'searchbar' }, search, selectBtn);
   const chips = h('div', { class: 'chips', role: 'tablist', 'aria-label': 'Groups' });
   const formSlot = h('div');
   const list = h('div', { class: 'list' });
+  const selBar = h('div', { class: 'selbar' });
   const settingsBox = h('div', { class: 'settings' });
   const importInput = h('input', { type: 'file', accept: '.json,application/json', hidden: true, class: 'import-pick' });
   const bodyInner = h('div', { class: 'body-inner' });
@@ -515,12 +539,13 @@
   // --- Rendering -------------------------------------------------------------
   function render() {
     gearBtn.classList.toggle('on', view === 'settings');
+    selectBtn.classList.toggle('on', !!selecting);
     formApi = null;
     if (view === 'settings') {
       bodyInner.replaceChildren(settingsBox);
       renderSettings();
     } else {
-      bodyInner.replaceChildren(search, chips, formSlot, list);
+      bodyInner.replaceChildren(searchBar, chips, formSlot, list, ...(selecting ? [selBar] : []));
       renderChips();
       renderForm();
       renderList();
@@ -542,6 +567,7 @@
   function setView(next) {
     view = next;
     attaching = null;
+    selecting = null;
     if (!ui.open) setUI({ open: true });
     render();
   }
@@ -647,11 +673,19 @@
     return `${it.title}\n${isFile(it) ? it.file.name : it.content}`.toLowerCase().includes(query);
   }
 
+  function shownItems() {
+    const cur = currentGroup();
+    if (query) return items.filter(matches);
+    return cur === 'all' ? items : items.filter((it) => groupOf(it) === cur);
+  }
+
   function renderList() {
     const cur = currentGroup();
-    const inView = cur === 'all' ? items : items.filter((it) => groupOf(it) === cur);
-    const shown = query ? items.filter(matches) : inView;
+    const shown = shownItems();
     countEl.textContent = items.length ? String(shown.length) : '';
+    // Only what's on screen can be picked, so a delete never reaches snippets hidden by a group or search.
+    if (selecting) for (const id of selecting) if (!shown.some((it) => it.id === id)) selecting.delete(id);
+    renderSelBar(shown);
     if (!items.length) {
       list.replaceChildren(
         h(
@@ -673,6 +707,10 @@
       for (const it of shown) {
         if (editing === it.id) {
           nodes.push(buildForm(it));
+          continue;
+        }
+        if (selecting) {
+          nodes.push(buildPickRow(it, showGroup));
           continue;
         }
         nodes.push(buildRow(it, { reorderable: !query, showGroup }));
@@ -724,6 +762,7 @@
 
   function buildRow(it, { reorderable, showGroup }) {
     const file = isFile(it);
+    const link = linkOf(it);
     const row = h('div', { class: reorderable ? 'row' : 'row nogrip' });
     const tag = showGroup ? h('span', { class: 'tag', text: `${groupName(groupOf(it))} · ` }) : null;
     const main = h(
@@ -742,6 +781,7 @@
       file
         ? h('button', { class: 'ic', title: 'Attach to an upload field on this page', 'aria-label': 'Attach', onclick: () => startAttach(it) }, icon('paperclip'))
         : h('button', { class: 'ic', title: 'Type into the last field you clicked', 'aria-label': 'Insert', onclick: () => insertItem(it, row) }, icon('insert')),
+      link && h('button', { class: 'ic', title: `Open ${link.hostname} in a new tab`, 'aria-label': 'Open link', onclick: () => openLink(link) }, icon('external')),
       h('button', { class: 'ic', title: 'Edit', 'aria-label': 'Edit', onclick: () => startEdit(it.id) }, icon('pencil')),
       confirmButton('Delete', () => deleteItem(it))
     );
@@ -862,6 +902,102 @@
     saveItems();
     renderChips();
     renderList();
+  }
+
+  // --- Picking several snippets (to delete them together) ----------------------
+  function setSelecting(on) {
+    selecting = on ? new Set() : null;
+    lastPicked = null;
+    editing = null;
+    attaching = null;
+    if (!ui.open) setUI({ open: true });
+    render();
+  }
+
+  // The whole row is one button: a click picks it instead of copying, and Shift+click picks a range.
+  function buildPickRow(it, showGroup) {
+    const on = selecting.has(it.id);
+    const tag = showGroup ? h('span', { class: 'tag', text: `${groupName(groupOf(it))} · ` }) : null;
+    return h(
+      'button',
+      { class: `row pickrow${on ? ' picked' : ''}`, 'aria-pressed': String(on), onclick: (e) => pickItem(it.id, e.shiftKey) },
+      h('span', { class: 'check' }, icon('check')),
+      ...(isFile(it) ? [buildThumb(it)] : []),
+      h(
+        'span',
+        { class: 'main' },
+        h('span', { class: 't', text: it.title }),
+        h('span', { class: 'p' }, tag, isFile(it) ? `${fileKind(it.file)} · ${formatSize(it.file.size)}` : preview(it.content))
+      )
+    );
+  }
+
+  function pickItem(id, range) {
+    const ids = shownItems().map((it) => it.id);
+    if (range && lastPicked && ids.includes(lastPicked)) {
+      const [a, b] = [ids.indexOf(lastPicked), ids.indexOf(id)].sort((x, y) => x - y);
+      for (const x of ids.slice(a, b + 1)) selecting.add(x);
+    } else if (selecting.has(id)) selecting.delete(id);
+    else selecting.add(id);
+    lastPicked = id;
+    renderList();
+  }
+
+  function renderSelBar(shown) {
+    if (!selecting) return;
+    const n = selecting.size;
+    const all = shown.length > 0 && n === shown.length;
+    let timer;
+    const del = h(
+      'button',
+      {
+        class: 'tbtn danger',
+        disabled: n === 0,
+        title: n ? `Delete ${plural(n, 'snippet')}` : 'Pick snippets first',
+        onclick: () => {
+          if (del.classList.contains('confirm')) {
+            clearTimeout(timer);
+            deleteItems(selecting);
+            return;
+          }
+          del.classList.add('confirm');
+          del.lastChild.textContent = `Delete ${n}?`;
+          del.title = 'Click again to delete';
+          timer = setTimeout(() => {
+            del.classList.remove('confirm');
+            del.lastChild.textContent = 'Delete';
+            del.title = `Delete ${plural(n, 'snippet')}`;
+          }, 2500);
+        },
+      },
+      icon('trash'),
+      h('span', { text: 'Delete' })
+    );
+    selBar.replaceChildren(
+      h('span', { class: 'sel-count', text: n ? `${n} selected` : 'Click to select' }),
+      h('button', {
+        class: 'tbtn',
+        text: all ? 'None' : 'All',
+        title: all ? 'Clear the selection' : 'Select every snippet shown',
+        disabled: !shown.length,
+        onclick: () => {
+          selecting = new Set(all ? [] : shown.map((it) => it.id));
+          renderList();
+        },
+      }),
+      del,
+      h('button', { class: 'tbtn primary', text: 'Done', onclick: () => setSelecting(false) })
+    );
+  }
+
+  function deleteItems(ids) {
+    const gone = items.filter((x) => ids.has(x.id));
+    items = items.filter((x) => !ids.has(x.id));
+    for (const it of gone) if (isFile(it)) forgetFile(it.id, true);
+    saveItems();
+    selecting = null;
+    render();
+    showToast(`Deleted ${plural(gone.length, 'snippet')}`);
   }
 
   function buildForm(item) {
@@ -997,6 +1133,7 @@
   function startEdit(id) {
     view = 'list';
     attaching = null;
+    selecting = null;
     editing = editing === id ? null : id;
     if (id === 'new' && !editing) draft = null;
     if (id === 'new' && query) {
@@ -1046,7 +1183,12 @@
         seg([['chosen', 'Sites I turn on'], ['all', 'Every site']], ui.everywhere ? 'all' : 'chosen', setShowOn),
         h('div', { class: 'hint', text: 'Turn it on for a site with the toolbar icon or Alt+Shift+K.' })
       ),
-      section('Groups', ...groups.map(groupRow), h('button', { class: 'tbtn', onclick: addGroupFromSettings }, icon('plus'), 'New group')),
+      section(
+        'Groups',
+        ...groups.map(groupRow),
+        h('button', { class: 'tbtn', onclick: addGroupFromSettings }, icon('plus'), 'New group'),
+        h('div', { class: 'hint', text: 'Drag ⋮⋮ to change the order of the group buttons.' })
+      ),
       section(
         'Backup',
         h(
@@ -1101,7 +1243,43 @@
       del.disabled = true;
       del.title = 'Move or delete its snippets first';
     }
-    return h('div', { class: 'grow' }, input, h('span', { class: 'gcount', title: plural(count, 'snippet'), text: String(count) }), del);
+    // Only the grip is draggable, so selecting text in the name box still works.
+    const grip = h('span', { class: 'grip', draggable: 'true', title: 'Drag to reorder' }, icon('grip'));
+    const row = h('div', { class: 'grow' }, grip, input, h('span', { class: 'gcount', title: plural(count, 'snippet'), text: String(count) }), del);
+    grip.addEventListener('dragstart', (e) => {
+      dragGroup = g.id;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('application/x-sidesnip-group', g.id);
+      e.dataTransfer.setDragImage(row, 8, row.offsetHeight / 2);
+      row.classList.add('dragging');
+    });
+    grip.addEventListener('dragend', () => {
+      dragGroup = null;
+      row.classList.remove('dragging');
+      clearDropMarks();
+    });
+    row.addEventListener('dragover', (e) => {
+      if (!dragGroup || dragGroup === g.id) return;
+      e.preventDefault();
+      const r = row.getBoundingClientRect();
+      clearDropMarks();
+      row.classList.add(e.clientY > r.top + r.height / 2 ? 'drop-after' : 'drop-before');
+    });
+    row.addEventListener('drop', (e) => {
+      if (!dragGroup || dragGroup === g.id) return;
+      e.preventDefault();
+      moveGroup(dragGroup, g.id, row.classList.contains('drop-after'));
+    });
+    return row;
+  }
+
+  function moveGroup(fromId, toId, after) {
+    const next = groups.slice();
+    const [moved] = next.splice(next.findIndex((x) => x.id === fromId), 1);
+    next.splice(next.findIndex((x) => x.id === toId) + (after ? 1 : 0), 0, moved);
+    groups = next;
+    saveGroups();
+    renderSettings();
   }
 
   function addGroupFromSettings() {
@@ -1367,6 +1545,12 @@
     const res = await send({ type: 'ss-insert', text: it.content });
     flash(row, !!res?.ok);
     showToast(res?.ok ? `Inserted “${short(it.title)}”` : 'Click into a form field first');
+  }
+
+  async function openLink(url) {
+    if (!alive()) return showToast('SideSnip was updated, reload this page');
+    const res = await send({ type: 'ss-open', url: url.href });
+    if (!res?.ok) showToast('Couldn’t open that link');
   }
 
   // --- Backup ----------------------------------------------------------------

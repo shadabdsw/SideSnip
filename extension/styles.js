@@ -235,11 +235,13 @@ svg {
 .dock[data-anchor="top"]:not(.open) .collapse svg,
 .dock[data-anchor="bottom"].open .collapse svg { transform: rotate(90deg); }
 
+.searchbar { display: flex; align-items: center; gap: 2px; margin: 0 6px 6px 10px; }
 .search {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 0 10px 6px;
   padding: 7px 10px;
   border-radius: 10px;
   background: var(--edge);
@@ -390,6 +392,35 @@ svg {
 .tag { color: var(--tag); font-weight: 600; }
 .acts { display: flex; gap: 1px; opacity: 0; transition: opacity 0.15s ease; }
 .row:hover .acts, .row:focus-within .acts { opacity: 1; }
+
+/* Picking several snippets: each row becomes a toggle with a round check, and a bar sits under the list. */
+.pickrow { width: 100%; padding: 0 4px 0 8px; text-align: left; }
+.pickrow .thumb { margin-left: 0; }
+.pickrow .main { padding-left: 8px; }
+.check {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+  color: transparent;
+}
+.check svg { width: 11px; height: 11px; stroke-width: 3; }
+.pickrow.picked { background: var(--hover); }
+.pickrow.picked .check { background: var(--accent); box-shadow: none; color: #fff; }
+.selbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px 8px 14px;
+  border-top: 1px solid var(--edge);
+}
+.sel-count { flex: 1; min-width: 0; font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.selbar .tbtn { padding: 0 8px; }
+.selbar .tbtn.danger:not(:disabled) { color: var(--danger); }
+.selbar .tbtn.danger.confirm { background: var(--danger); color: #fff; }
 .empty {
   display: flex;
   flex-direction: column;
@@ -550,7 +581,12 @@ svg {
   color: var(--muted);
 }
 .seg button.on { background: var(--bg-strong); color: var(--fg); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12); }
-.grow { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+.grow { display: flex; align-items: center; gap: 4px; margin: 0 0 4px -6px; border-radius: 8px; }
+.grow .grip { width: 14px; height: 30px; opacity: 0.45; }
+.grow:hover .grip { opacity: 0.8; }
+.grow.dragging { opacity: 0.4; }
+.grow.drop-before { box-shadow: 0 -2px 0 var(--accent); }
+.grow.drop-after { box-shadow: 0 2px 0 var(--accent); }
 .grow input { flex: 1; min-width: 0; height: 30px; padding: 0 9px; border-radius: 8px; }
 .grow input[readonly] { color: var(--muted); }
 .gcount { min-width: 18px; text-align: right; font-size: 11px; color: var(--muted); }

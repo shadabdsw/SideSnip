@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "SideSnip",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage_url": "https://github.com/shadabdsw/sidesnip",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAohzZ7kFNzaX1tmwlWqMtlH9ZsY9XQQ7Z+r7WbDBE/r8uMTijEulPTjWedSMzoCMMly+p/U+emFMtkxLLN3Wm56OvpkIS6z+kPW5WR8yqz3kidEC4t0N9SKUCtm2J2i96qMbeydoa62/J+w0EEp1AAWBwAjEIMEYSkyN+3zk/dZQAD5gQR4U7t9yxDjUvs1+WfG8l99nkxF1yDFZ+eSIXt/nCh35+BMPRhcyoJlJZ2+V8pLIleXS37YvVDBMoi6Z9X9kINUyUDfaGKxH2+5XyBnTZ6OCdjy6o+7oM94sETAopQqJJPApMegJXU4M838dKVqqhDa27h3dc9HwrLFqIwQIDAQAB",
-  "description": "A floating glass panel of reusable snippets and files. Click to copy, or insert straight into form fields.",
+  "description": "Keep the text and files you reuse in a glass panel at the side of your browser. Click to copy, or insert straight into any form.",
   "permissions": ["storage", "unlimitedStorage", "scripting", "activeTab"],
   "optional_permissions": ["clipboardRead"],
   "host_permissions": ["<all_urls>"],

@@ -1,33 +1,27 @@
 # SideSnip
 
-A small frosted-glass panel that sits at the edge of your browser and holds the answers you type again and again: your LinkedIn link, notice period, a short bio, even your resume file. Click one to copy it, or drop it straight into the form you're filling.
+Keep the text and files you reuse in a glass panel at the side of your browser. Click to copy, or insert straight into any form.
 
-Handy for job applications, email replies, support tickets or any form you fill in often. It works on any website.
+SideSnip keeps the text you type again and again (answers, links, email replies) and files such as your resume in a small frosted-glass panel at the side of your browser. Click a snippet to copy it, insert it into the field you're typing in, or attach a file to an upload field. Sort snippets into groups and search them all at once. SideSnip stays off until you turn it on for a site, and everything stays in your browser.
 
 ---
 
 ## Install
 
-Download the latest ZIP from the [releases page](https://github.com/shadabdsw/sidesnip/releases/latest) and unzip it to a folder you'll keep. (Downloaded the whole repository instead? Use its `extension` folder in the steps below.)
+### Opera or Firefox
 
-### Chrome, Edge or Opera
+Install it from [Opera add-ons](https://addons.opera.com/extensions/details/sidesnip/) or [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/sidesnip/). Updates arrive automatically.
 
-1. Open the extensions page: `chrome://extensions`, `edge://extensions` or `opera://extensions`.
-2. Turn on **Developer mode**.
-3. Click **Load unpacked** and choose the `sidesnip` folder.
-4. Pin the SideSnip icon to your toolbar (puzzle-piece menu → pin). You'll use it to turn SideSnip on.
+### Chrome, Edge, Brave or another browser
 
-### Firefox
+1. Download the latest ZIP from the [releases page](https://github.com/shadabdsw/sidesnip/releases/latest) and unzip it to a folder you'll keep. (Downloaded the whole repository instead? Use its `extension` folder.)
+2. Open your browser's **Extensions** page, for example `chrome://extensions`.
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and choose the folder with `manifest.json` in it.
 
-Firefox only lets you try unsigned extensions temporarily:
+Then pin the SideSnip icon to your toolbar (puzzle-piece menu → pin). You'll use it to turn SideSnip on.
 
-1. Open `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on…** and choose `sidesnip/manifest.json`.
-3. Pin it: puzzle-piece menu → ⚙ next to SideSnip → **Pin to Toolbar**.
-
-Firefox removes temporary add-ons when it closes. **Export your snippets before closing Firefox**, and import them next time.
-
-### Updating
+### Updating a downloaded copy
 
 When you get a new version, unzip it **over the same folder** (replacing the old files), then click the **↻ reload** button on the SideSnip card in the extensions page. Your snippets stay put.
 
@@ -51,6 +45,7 @@ SideSnip stays hidden until you want it on a site.
 - **Copy:** click a snippet's title. Your cursor stays in the form, so just press **Ctrl+V**.
 - **Type it in for you:** click into a form field, then click **↵** on the snippet.
 - **Drag:** drag a snippet by its dotted handle (⋮⋮) and drop it onto a text box.
+- **Open a link:** a snippet that's just a web address (like your LinkedIn or portfolio link) also gets an **↗** button that opens it in a new tab.
 
 ### Save something you just copied
 Click **📋** in the panel's header. The copied text is filled in; add a title and click **Save**.
@@ -67,8 +62,15 @@ The first time, SideSnip opens a small window asking for clipboard access, then 
 - The buttons under the search box are your groups. You start with **General** and **Work**; add more (for example **Job Applications**) with **+**.
 - **Move a snippet to a group:** drag it onto that group's button.
 - **Delete a group:** select it, then click its **×** twice. Its snippets aren't lost; they move to **(No group)**.
-- **Rename groups:** in Settings.
+- **Rename groups or change their order:** in Settings. Drag a group by its dotted handle (⋮⋮) to move its button.
 - **Search:** the search box looks through every group at once.
+
+### Delete several snippets at once
+1. Click the **checklist** button next to the search box.
+2. Click the snippets you want to delete. Hold **Shift** and click to pick everything between two snippets, or click **All**.
+3. Click **Delete**, then click it again to confirm. Click **Done** to go back without deleting.
+
+Only the snippets shown are picked, so choose a group or search first to narrow it down.
 
 ### Put the panel where you like it
 - Drag the panel's header anywhere on the screen.
@@ -89,7 +91,7 @@ Open them with the **sliders** button in the panel's header.
 - **Position:** the four corners, or floating on the left or right.
 - **Theme:** **Auto** matches the website you're on (a dark panel on dark sites, light on light sites), or always **Light** or always **Dark**.
 - **Show SideSnip on:** only the sites you turn it on for (the default), or every site.
-- **Groups:** rename, add or delete.
+- **Groups:** rename, reorder, add or delete.
 - **Backup:** **Export** saves everything (snippets, files and groups) to a file. **Import** adds snippets from a file in the same order, after the ones you already have, and skips any you already have.
 - **This site:** turn SideSnip off here.
 
@@ -119,8 +121,6 @@ Open them with the **sliders** button in the panel's header.
 - **"Click into a form field first".** Click inside the box you want to fill, then press ↵ on the snippet.
 - **A file won't drop into an upload area.** Use **📎** on the file snippet instead. Some forms are embedded in a way that only 📎 can reach.
 - **The 📎 list shows several similar options.** Hover over each to see which field it is. Options marked "not visible on the page" are hidden upload buttons the site uses behind the scenes (Gmail has these). They usually still work: "Any file" is for attachments, "Images" for inserting pictures.
-- **Firefox: my snippets disappeared.** Firefox removes temporary add-ons when it closes. Import your last export.
-
 ---
 
 ## Limits

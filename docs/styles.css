@@ -101,18 +101,19 @@ code { font: 13px/1.4 ui-monospace, "Cascadia Code", Consolas, monospace; paddin
 .btn.soon { opacity: 0.55; }
 .btn.soon:hover { transform: none; border-color: var(--edge); filter: none; }
 .btn.primary.soon:hover { border-color: var(--accent-strong); }
+.btn[hidden] { display: none; }
+.btn small { font-size: 12px; font-weight: 500; opacity: 0.85; }
+.btn small:empty { display: none; }
 
 .also { margin: 16px 0 0; color: var(--muted); font-size: 14px; }
-.also a { font-weight: 600; text-decoration: none; }
-.also a:hover { text-decoration: underline; }
-.also a.soon { color: var(--muted); font-weight: 500; }
-.also a.soon:hover { text-decoration: none; }
-.also .free { display: block; margin-top: 2px; }
 
 .howto { margin-top: 14px; max-width: 520px; color: var(--muted); font-size: 14px; }
 .howto summary { cursor: pointer; color: var(--muted); }
 .howto summary:hover { color: var(--fg); }
-.howto p { margin: 8px 0 0; }
+.howto ol { margin: 10px 0 0; padding-left: 22px; text-align: left; }
+.howto li + li { margin-top: 4px; }
+.howto a { font-weight: 600; }
+.howto a.soon { color: var(--muted); font-weight: 500; }
 .howto strong { color: var(--fg); }
 
 /* ---------- Home: pictures of the panel in use ---------- */
@@ -144,7 +145,7 @@ code { font: 13px/1.4 ui-monospace, "Cascadia Code", Consolas, monospace; paddin
 .mail-bar { padding: 9px 14px 9px 48px; background: #f1f3f6; font-weight: 600; font-size: 13px; }
 .mail-line { display: flex; gap: 8px; padding: 8px 14px 8px 48px; border-bottom: 1px solid #eceef2; color: #333; white-space: nowrap; overflow: hidden; }
 .mail-line span { color: #888; }
-.mail-body { padding: 12px 14px 4px 48px; min-height: 190px; line-height: 1.55; }
+.mail-body { padding: 12px 14px 4px 48px; min-height: 182px; line-height: 1.55; }
 .mail-body p { margin: 0 0 8px; }
 .mail-body .ins { background: rgba(10, 132, 255, 0.12); border-radius: 4px; padding: 1px 3px; margin-left: -3px; }
 .mail-body .ins i { display: inline-block; width: 1.5px; height: 14px; margin-left: 1px; vertical-align: -2px; background: #0a84ff; }
@@ -263,6 +264,9 @@ a[data-link]:not([href]) { cursor: default; }
   .brand-row img { width: 52px; height: 52px; }
   .features { padding-top: 56px; }
   .features ul { grid-template-columns: 1fr; }
+  footer { flex-direction: column; align-items: center; text-align: center; }
+  .credits { align-items: center; }
+  footer nav { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

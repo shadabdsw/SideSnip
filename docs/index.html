@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SideSnip</title>
-<meta name="description" content="A free browser extension that keeps the text you type again and again, and files like your resume, in a small glass panel at the side of your browser. Click to copy, or put it straight into the form.">
+<meta name="description" content="Keep the text and files you reuse in a glass panel at the side of your browser. Click to copy, or insert straight into any form.">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/icon48.png" sizes="48x48">
 <link rel="stylesheet" href="styles.css">
@@ -20,6 +20,7 @@
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"/></symbol>
   <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
   <symbol id="i-click" viewBox="0 0 24 24"><path d="M14 4.1 12 6M5.1 8l-2.9-.8M6 12l-1.9 2M7.2 2.2 8 5.1"/><path d="M9.04 9.69a.5.5 0 0 1 .65-.65l11 4.5a.5.5 0 0 1-.07.95l-4.35 1.04a1 1 0 0 0-.74.74l-1.04 4.35a.5.5 0 0 1-.95.07z"/></symbol>
   <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
@@ -34,16 +35,26 @@
       <img src="assets/icon128.png" alt="" width="64" height="64">
       <h1>SideSnip</h1>
     </div>
-    <p class="lead">A small glass panel at the side of your browser that keeps the text you type again and again, and files like your resume, one click away: copy it, type it into the field you’re on, or attach it to any form.</p>
+    <!-- The short description: keep it the same as manifest.json "description", the README's first line and the store summaries. -->
+    <p class="lead">Keep the text and files you reuse in a glass panel at the side of your browser. Click to copy, or insert straight into any form.</p>
+    <!-- Store buttons say "Coming soon" until their link is set in site.js; data-optional ones stay hidden until then. -->
     <div class="actions">
-      <a class="btn primary" data-link="releases"><svg><use href="#i-download"/></svg><span>Download</span></a>
+      <a class="btn primary" data-link="opera"><svg><use href="#i-puzzle"/></svg><span>Add to Opera</span><small></small></a>
+      <a class="btn primary" data-link="firefox"><svg><use href="#i-puzzle"/></svg><span>Add to Firefox</span><small></small></a>
+      <a class="btn primary" data-link="edge" data-optional><svg><use href="#i-puzzle"/></svg><span>Add to Edge</span></a>
+      <a class="btn primary" data-link="chrome" data-optional><svg><use href="#i-puzzle"/></svg><span>Add to Chrome</span></a>
       <a class="btn" data-link="github"><svg><use href="#i-github"/></svg><span>GitHub</span></a>
     </div>
     <!-- Update with every release, together with manifest.json "version". -->
-    <p class="also"><span class="release">Version 1.0.0 · 24 October 2026</span><span class="sep"> · </span>Also for <a data-link="edge">Edge</a> · <a data-link="opera">Opera</a> · <a data-link="firefox">Firefox</a><span class="free">Free, no account, and nothing leaves your computer.</span></p>
+    <p class="also"><span class="release">Version 1.1.0 · 24 October 2026</span><span class="sep"> · </span>Free, no account, and nothing leaves your computer.</p>
     <details class="howto">
-      <summary>Installing the download in Chrome or Brave</summary>
-      <p>Unzip it to a folder you’ll keep, open <code>chrome://extensions</code>, turn on <strong>Developer mode</strong>, then click <strong>Load unpacked</strong> and choose the folder.</p>
+      <summary>Chrome, Edge, Brave or another browser</summary>
+      <ol>
+        <li><a data-link="releases">Download SideSnip</a> and unzip it to a folder you’ll keep.</li>
+        <li>Open your browser’s <strong>Extensions</strong> page, for example <code>chrome://extensions</code>.</li>
+        <li>Turn on <strong>Developer mode</strong>.</li>
+        <li>Click <strong>Load unpacked</strong> and choose the folder with <code>manifest.json</code> in it.</li>
+      </ol>
     </details>
   </section>
 

@@ -196,6 +196,17 @@ api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return reply(run, sendResponse, { result: 'none' });
   }
 
+  if (msg?.type === 'ss-open') {
+    // Web links only. Opened by the extension, not the page, so the site gets no opener or referrer.
+    let url = null;
+    try {
+      url = new URL(msg.url);
+    } catch {}
+    if (!url || !/^https?:$/.test(url.protocol)) return reply(Promise.resolve({ ok: false }), sendResponse, { ok: false });
+    const open = api.tabs.create({ url: url.href, index: sender.tab.index + 1, openerTabId: tabId });
+    return reply(open.then(() => ({ ok: true })), sendResponse, { ok: false });
+  }
+
   if (msg?.type === 'ss-focus') {
     api.storage.session.set({ [frameKey(tabId)]: sender.frameId ?? 0 });
     return;
